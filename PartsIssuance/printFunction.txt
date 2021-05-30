@@ -1,0 +1,42 @@
+function print-Screen2{
+param($path)
+#$path = "C:\Users\110049\Desktop\sample.jpg"
+$doc = New-Object System.Drawing.Printing.PrintDocument
+$prev = New-Object System.Windows.Forms.PrintPreviewDialog
+
+$snipxAxis = 0
+$snipyAxis = 0 
+$snipx = 1366
+$snipy = 768
+$paperx = 1169
+
+
+## SCREEN CAPTURE #######################################
+$bounds = [Drawing.Rectangle]::FromLTRB($snipxAxis,$snipyAxis,$snipx,$snipy)
+$picture = New-Object Drawing.Bitmap $bounds.Width,$bounds.Height
+$graphics = [Drawing.Graphics]::FromImage($picture)
+$graphics.CopyFromScreen($bounds.Location,[Drawing.point]::Empty,$bounds.Size)
+$picture.Save($path)
+
+
+## PRINTER ########################################
+
+$doc.DefaultPageSettings.Landscape = $true
+$aspectRatio = $snipx/$snipy
+$papery = $paperx*($snipy/$snipx) 
+
+$doc.add_PrintPage{
+
+$_.graphics.DrawImage($picture,0,0,$paperx,$papery )
+
+}
+
+#$prev.Document = $doc
+#$prev.ShowDialog()
+
+$doc.Print()
+
+
+
+
+}
